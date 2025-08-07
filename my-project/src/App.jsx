@@ -1,5 +1,7 @@
 import React from 'react';
 import CompanyProblems from './components/CompanyProblems';
+import logo from './assets/codeprep-logo.svg';
+
 
 function App() {
   return (
