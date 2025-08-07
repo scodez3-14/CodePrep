@@ -55,11 +55,17 @@ const CompanyProblems = () => {
       download: true,
       header: true,
       complete: (results) => {
-        setData(
-          results.data.filter((row) =>
-            Object.values(row).some((val) => val && val.toString().trim() !== '')
-          )
+        const filteredData = results.data.filter((row) =>
+          Object.values(row).some((val) => val && val.toString().trim() !== '')
         );
+        
+        // Log the first item to see available fields
+        if (filteredData.length > 0) {
+          console.log('CSV Fields:', Object.keys(filteredData[0]));
+          console.log('Sample data:', filteredData[0]);
+        }
+        
+        setData(filteredData);
         setLoading(false);
       },
       error: (error) => {
@@ -93,6 +99,7 @@ const CompanyProblems = () => {
   };
 
   const getLeetCodeUrl = (problemTitle) => {
+    if (!problemTitle) return '#';
     // Convert problem title to LeetCode URL format
     const urlTitle = problemTitle
       .toLowerCase()
@@ -102,6 +109,7 @@ const CompanyProblems = () => {
   };
 
   const handleProblemClick = (problemTitle) => {
+    if (!problemTitle) return;
     const url = getLeetCodeUrl(problemTitle);
     window.open(url, '_blank');
   };
@@ -148,53 +156,128 @@ const CompanyProblems = () => {
               <table className="w-full">
                 <thead>
                   <tr className="bg-gray-900/50 border-b border-emerald-500/20 sticky top-0">
-                    {data.length > 0 &&
-                      Object.keys(data[0]).map((key) => (
-                        <th className="px-2 sm:px-4 py-3 text-left text-xs font-bold text-emerald-300 uppercase tracking-wider" key={key}>
-                          {key === 'ID' ? '#' : key.replace(/([A-Z])/g, ' $1').trim()}
-                        </th>
-                      ))}
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs font-bold text-emerald-300 uppercase tracking-wider">Problem #</th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs font-bold text-emerald-300 uppercase tracking-wider">Problem Name</th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs font-bold text-emerald-300 uppercase tracking-wider">Occurrences</th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs font-bold text-emerald-300 uppercase tracking-wider">Difficulty</th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs font-bold text-emerald-300 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-emerald-500/10">
-                  {data.map((row, i) => (
-                    <tr key={i} className="transition-all duration-200 hover:bg-gray-700/30">
-                      {Object.entries(row).map(([key, value], j) => (
-                        <td className="px-2 sm:px-4 py-3 whitespace-nowrap" key={j}>
-                          {key.toLowerCase().includes('title') || key.toLowerCase().includes('name') ? (
-                            <button
-                              onClick={() => handleProblemClick(value)}
-                              className="text-emerald-400 hover:text-emerald-300 font-semibold hover:underline cursor-pointer text-left transition-colors duration-200 text-xs flex items-center"
-                              type="button"
-                            >
-                              <svg className="w-3 h-3 mr-1 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                              </svg>
-                              {value}
-                            </button>
-                          ) : key.toLowerCase().includes('difficulty') ? (
-                            <span className={`inline-flex px-2 py-0.5 text-xs font-bold rounded-full shadow-sm ${
-                              value === 'Easy' ? 'bg-green-900/50 text-green-400 border border-green-500/30' : 
-                              value === 'Medium' ? 'bg-yellow-900/50 text-yellow-400 border border-yellow-500/30' : 
-                              'bg-red-900/50 text-red-400 border border-red-500/30'
-                            }`}>
-                              {value}
-                            </span>
-                          ) : key.toLowerCase().includes('frequency') ? (
-                            <div className="flex items-center">
-                              <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-1.5 py-0.5 rounded-full">
-                                <span className="text-xs font-bold text-white">{value}</span>
-                              </div>
-                            </div>
-                          ) : (
-                            <span className="text-xs text-emerald-100/80 font-medium">
-                              {value}
-                            </span>
-                          )}
+                  {data.map((row, i) => {
+                    // Carefully extract the key fields with fallbacks
+                    let problemName = '';
+                    
+                    // Look through all object keys for a title-like field
+                    Object.entries(row).forEach(([key, value]) => {
+                      if (
+                        (key.toLowerCase().includes('name') || 
+                         key.toLowerCase().includes('title') || 
+                         key.toLowerCase().includes('problem')) && 
+                        value && 
+                        value.trim() !== ''
+                      ) {
+                        problemName = value;
+                      }
+                    });
+                    
+                    // Look for frequency fields
+                    let frequency = '';
+                    Object.entries(row).forEach(([key, value]) => {
+                      if (
+                        (key.toLowerCase().includes('frequency') || 
+                         key.toLowerCase().includes('occurrences') || 
+                         key.toLowerCase().includes('occ') ||
+                         key.toLowerCase().includes('count')) && 
+                        value && 
+                        value.trim() !== ''
+                      ) {
+                        frequency = value;
+                      }
+                    });
+                    if (!frequency) frequency = '1';
+                    
+                    // Get difficulty
+                    let difficulty = 'Unknown';
+                    Object.entries(row).forEach(([key, value]) => {
+                      if (
+                        key.toLowerCase().includes('difficulty') && 
+                        value && 
+                        value.trim() !== ''
+                      ) {
+                        difficulty = value;
+                      }
+                    });
+                    
+                    // Get problem ID/Number
+                    let problemId = '';
+                    Object.entries(row).forEach(([key, value]) => {
+                      if (
+                        (key.toLowerCase().includes('id') || 
+                         key.toLowerCase().includes('number') || 
+                         key.toLowerCase() === 'no' ||
+                         key.toLowerCase() === '#') && 
+                        value && 
+                        value.toString().trim() !== ''
+                      ) {
+                        problemId = value;
+                      }
+                    });
+                    
+                    return (
+                      <tr key={i} className="transition-all duration-200 hover:bg-gray-700/30">
+                        {/* Problem Number/ID Column */}
+                        <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
+                          <span className="text-xs text-emerald-400 font-bold">
+                            {problemId || (i+1)}
+                          </span>
                         </td>
-                      ))}
-                    </tr>
-                  ))}
+                        
+                        {/* Problem Name Column */}
+                        <td className="px-2 sm:px-4 py-3">
+                          <span className="text-xs text-emerald-100 font-medium">
+                            {problemName || `Problem ${i+1}`}
+                          </span>
+                        </td>
+                        
+                        {/* Occurrences Column */}
+                        <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-1.5 py-0.5 rounded-full">
+                              <span className="text-xs font-bold text-white">{frequency}</span>
+                            </div>
+                          </div>
+                        </td>
+                        
+                        {/* Difficulty Column */}
+                        <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-0.5 text-xs font-bold rounded-full shadow-sm ${
+                            difficulty.toLowerCase() === 'easy' ? 'bg-green-900/50 text-green-400 border border-green-500/30' : 
+                            difficulty.toLowerCase() === 'medium' ? 'bg-yellow-900/50 text-yellow-400 border border-yellow-500/30' : 
+                            difficulty.toLowerCase() === 'hard' ? 'bg-red-900/50 text-red-400 border border-red-500/30' :
+                            'bg-gray-900/50 text-emerald-400 border border-emerald-500/30'
+                          }`}>
+                            {difficulty}
+                          </span>
+                        </td>
+                        
+                        {/* Action Link Column */}
+                        <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
+                          <button
+                            onClick={() => handleProblemClick(problemName)}
+                            className={`bg-gradient-to-r ${!problemName ? 'from-gray-600 to-gray-700 cursor-not-allowed opacity-70' : 'from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 transform hover:-translate-y-0.5 hover:shadow-emerald-500/20'} text-white px-3 py-1 rounded text-xs transition-all duration-300 inline-flex items-center shadow-md hover:shadow-lg`}
+                            type="button"
+                            disabled={!problemName}
+                          >
+                            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            Solve
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
