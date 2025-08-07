@@ -18,7 +18,7 @@ function App() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
             <div className="text-center animate-fade-in-up">
               <h1 className="text-4xl sm:text-5xl font-black mb-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-400">
-                LeetTrack
+                CodePrep
               </h1>
               <p className="text-emerald-100/80 text-base sm:text-lg font-medium">
                 Company-wise LeetCode Problems Collection
