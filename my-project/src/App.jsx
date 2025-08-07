@@ -1,6 +1,5 @@
 import React from 'react';
 import CompanyProblems from './components/CompanyProblems';
-import logo from './assets/react.svg';
 
 
 function App() {
