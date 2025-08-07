@@ -1,47 +1,49 @@
+import React from 'react';
 import CompanyProblems from './components/CompanyProblems';
 
 function App() {
   return (
-    <div className="App min-h-screen">
+    <div className="App min-h-screen bg-gradient-to-br from-gray-900 to-slate-900">
       {/* Animated background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+        <div className="absolute -top-20 -right-20 w-80 h-80 bg-emerald-300 rounded-full mix-blend-soft-light filter blur-xl opacity-30 animate-blob"></div>
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-teal-200 rounded-full mix-blend-soft-light filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/3 left-1/4 w-80 h-80 bg-emerald-400 rounded-full mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+        <div className="absolute bottom-1/4 right-1/3 w-72 h-72 bg-green-300 rounded-full mix-blend-soft-light filter blur-xl opacity-30 animate-blob animation-delay-3000"></div>
       </div>
 
       <header className="relative z-10">
-        <div className="glass border-0 border-b border-white/20">
-          <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="bg-gray-900/60 border-0 border-b border-emerald-500/20 backdrop-blur-lg shadow-lg shadow-emerald-500/10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
             <div className="text-center animate-fade-in-up">
-              <h1 className="text-5xl font-bold mb-3 gradient-text">
+              <h1 className="text-4xl sm:text-5xl font-black mb-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-400">
                 LeetTrack
               </h1>
-              <p className="text-gray-700 text-xl font-medium">
+              <p className="text-emerald-100/80 text-base sm:text-lg font-medium">
                 Company-wise LeetCode Problems Collection
               </p>
-              <div className="mt-4 flex justify-center">
-                <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
+              <div className="mt-3 flex justify-center">
+                <div className="w-20 h-1 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full"></div>
               </div>
             </div>
           </div>
         </div>
       </header>
       
-      <main className="relative z-10 py-12">
+      <main className="relative z-10 py-6 sm:py-8">
         <CompanyProblems />
       </main>
       
-      <footer className="relative z-10 mt-20">
-        <div className="glass border-0 border-t border-white/20">
-          <div className="max-w-7xl mx-auto px-6 py-6">
-            <p className="text-center text-gray-600 text-sm">
+      <footer className="relative z-10 mt-12 sm:mt-16">
+        <div className="bg-gray-900/60 border-0 border-t border-emerald-500/20 backdrop-blur-lg shadow-lg shadow-emerald-500/10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+            <p className="text-center text-emerald-100/70 text-xs sm:text-sm">
               Data sourced from{' '}
               <a 
                 href="https://github.com/hxu296/leetcode-company-wise-problems-2022" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-indigo-600 hover:text-indigo-800 font-medium transition-colors duration-200"
+                className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors duration-200 hover:underline"
               >
                 hxu296/leetcode-company-wise-problems-2022
               </a>
@@ -49,7 +51,6 @@ function App() {
           </div>
         </div>
       </footer>
-
     </div>
   );
 }

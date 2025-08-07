@@ -1,5 +1,4 @@
-// components/CompanyProblems.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Papa from 'papaparse';
 
 const CompanyProblems = () => {
@@ -8,7 +7,7 @@ const CompanyProblems = () => {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // List of all companies with their CSV URLs
+  // List of all companies
   const companies = [
     'APT Portfolio', 'Accenture', 'Activision', 'Adobe', 'Affirm', 'Airbnb', 
     'Akamai', 'Akuna Capital', 'Alation', 'Alibaba', 'AllinCall', 'Amazon', 
@@ -43,9 +42,8 @@ const CompanyProblems = () => {
     'persistent systems', 'razorpay', 'tcs', 'tiktok', 'zeta suite'
   ];
 
-  const getCsvUrl = (companyName) => {
-    return `https://raw.githubusercontent.com/hxu296/leetcode-company-wise-problems-2022/master/companies/${encodeURIComponent(companyName)}.csv`;
-  };
+  const getCsvUrl = (companyName) =>
+    `https://raw.githubusercontent.com/hxu296/leetcode-company-wise-problems-2022/master/companies/${encodeURIComponent(companyName)}.csv`;
 
   const handleCompanyClick = (company) => {
     setSelectedCompany(company);
@@ -57,7 +55,11 @@ const CompanyProblems = () => {
       download: true,
       header: true,
       complete: (results) => {
-        setData(results.data.filter(row => Object.values(row).some(val => val && val.toString().trim() !== '')));
+        setData(
+          results.data.filter((row) =>
+            Object.values(row).some((val) => val && val.toString().trim() !== '')
+          )
+        );
         setLoading(false);
       },
       error: (error) => {
@@ -80,13 +82,13 @@ const CompanyProblems = () => {
   const getDifficultyColor = (difficulty) => {
     switch (difficulty?.toLowerCase()) {
       case 'easy':
-        return 'text-green-600 bg-green-100';
+        return 'bg-green-900/50 text-green-400 border border-green-500/30';
       case 'medium':
-        return 'text-yellow-600 bg-yellow-100';
+        return 'bg-yellow-900/50 text-yellow-400 border border-yellow-500/30';
       case 'hard':
-        return 'text-red-600 bg-red-100';
+        return 'bg-red-900/50 text-red-400 border border-red-500/30';
       default:
-        return 'text-gray-600 bg-gray-100';
+        return 'bg-gray-900/50 text-emerald-400 border border-emerald-500/30';
     }
   };
 
@@ -106,29 +108,29 @@ const CompanyProblems = () => {
 
   if (selectedCompany) {
     return (
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="glass rounded-2xl p-8 mb-8 animate-fade-in-up">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center">
+      <div className="max-w-7xl mx-auto p-3 sm:p-4">
+        <div className="bg-gray-800/40 border border-emerald-500/20 rounded-lg p-3 sm:p-4 mb-4 backdrop-blur-md shadow-lg shadow-emerald-500/10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center">
               <button 
                 onClick={handleBackToList}
-                className="btn-modern bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-3 rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 mr-6 flex items-center font-medium shadow-lg"
+                className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-1.5 rounded-md hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 sm:mr-4 flex items-center font-medium shadow-md mb-2 sm:mb-0 w-full sm:w-auto justify-center sm:justify-start text-sm hover:shadow-lg transform hover:-translate-y-0.5 hover:shadow-emerald-500/20"
               >
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                Back to Companies
+                Back
               </button>
               <div>
-                <h2 className="text-4xl font-bold text-gray-800 gradient-text">{selectedCompany}</h2>
-                <p className="text-gray-600 mt-1">LeetCode Problems Collection</p>
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-400 drop-shadow-sm">{selectedCompany}</h2>
+                <p className="text-emerald-200/70 mt-0.5 text-xs sm:text-sm">LeetCode Problems</p>
               </div>
             </div>
             {!loading && (
               <div className="text-right">
-                <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-4 rounded-xl">
-                  <p className="text-3xl font-bold">{data.length}</p>
-                  <p className="text-indigo-100">Problems</p>
+                <div className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 py-1.5 rounded-md shadow-md inline-block transform hover:scale-105 transition-transform duration-300">
+                  <p className="text-xl sm:text-2xl font-bold">{data.length}</p>
+                  <p className="text-emerald-100 text-xs">Problems</p>
                 </div>
               </div>
             )}
@@ -136,48 +138,56 @@ const CompanyProblems = () => {
         </div>
         
         {loading ? (
-          <div className="glass rounded-2xl p-16 text-center animate-fade-in-up">
-            <div className="spinner mx-auto mb-6"></div>
-            <p className="text-gray-600 text-xl font-medium">Loading problems...</p>
+          <div className="bg-gray-800/40 border border-emerald-500/20 rounded-lg p-6 text-center backdrop-blur-md shadow-lg shadow-emerald-500/10">
+            <div className="mx-auto mb-2 w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin"></div>
+            <p className="text-emerald-200/70 text-sm font-medium">Loading problems...</p>
           </div>
         ) : (
-          <div className="glass rounded-2xl overflow-hidden animate-fade-in-up table-modern">
+          <div className="bg-gray-800/40 border border-emerald-500/20 rounded-lg overflow-hidden backdrop-blur-md shadow-lg shadow-emerald-500/10">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-white/20">
+                  <tr className="bg-gray-900/50 border-b border-emerald-500/20 sticky top-0">
                     {data.length > 0 &&
-                      Object.keys(data[0]).map((key, index) => (
-                        <th className="px-8 py-6 text-left text-sm font-bold text-gray-700 uppercase tracking-wider" key={key}>
+                      Object.keys(data[0]).map((key) => (
+                        <th className="px-2 sm:px-4 py-3 text-left text-xs font-bold text-emerald-300 uppercase tracking-wider" key={key}>
                           {key === 'ID' ? '#' : key.replace(/([A-Z])/g, ' $1').trim()}
                         </th>
                       ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/10">
+                <tbody className="divide-y divide-emerald-500/10">
                   {data.map((row, i) => (
-                    <tr key={i} className="table-row transition-all duration-200">
+                    <tr key={i} className="transition-all duration-200 hover:bg-gray-700/30">
                       {Object.entries(row).map(([key, value], j) => (
-                        <td className="px-8 py-6 whitespace-nowrap" key={j}>
+                        <td className="px-2 sm:px-4 py-3 whitespace-nowrap" key={j}>
                           {key.toLowerCase().includes('title') || key.toLowerCase().includes('name') ? (
                             <button
                               onClick={() => handleProblemClick(value)}
-                              className="text-indigo-600 hover:text-indigo-800 font-semibold hover:underline cursor-pointer text-left transition-colors duration-200 animate-pulse-hover"
+                              className="text-emerald-400 hover:text-emerald-300 font-semibold hover:underline cursor-pointer text-left transition-colors duration-200 text-xs flex items-center"
+                              type="button"
                             >
+                              <svg className="w-3 h-3 mr-1 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
                               {value}
                             </button>
                           ) : key.toLowerCase().includes('difficulty') ? (
-                            <span className={`inline-flex px-4 py-2 text-sm font-bold rounded-full ${getDifficultyColor(value)} shadow-sm`}>
+                            <span className={`inline-flex px-2 py-0.5 text-xs font-bold rounded-full shadow-sm ${
+                              value === 'Easy' ? 'bg-green-900/50 text-green-400 border border-green-500/30' : 
+                              value === 'Medium' ? 'bg-yellow-900/50 text-yellow-400 border border-yellow-500/30' : 
+                              'bg-red-900/50 text-red-400 border border-red-500/30'
+                            }`}>
                               {value}
                             </span>
                           ) : key.toLowerCase().includes('frequency') ? (
                             <div className="flex items-center">
-                              <div className="bg-gradient-to-r from-indigo-100 to-purple-100 px-3 py-1 rounded-full">
-                                <span className="text-sm font-bold text-gray-800">{value}</span>
+                              <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-1.5 py-0.5 rounded-full">
+                                <span className="text-xs font-bold text-white">{value}</span>
                               </div>
                             </div>
                           ) : (
-                            <span className="text-sm text-gray-700 font-medium">
+                            <span className="text-xs text-emerald-100/80 font-medium">
                               {value}
                             </span>
                           )}
@@ -195,83 +205,88 @@ const CompanyProblems = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="text-center mb-12 animate-fade-in-up">
-        <h2 className="text-5xl font-bold mb-6 gradient-text">Choose a Company</h2>
-        <p className="text-gray-700 text-xl mb-8 font-medium">Select from {companies.length} companies to explore their LeetCode problems</p>
-        
-        {/* Modern Search Input */}
-        <div className="max-w-lg mx-auto mb-12">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="max-w-7xl mx-auto p-3 sm:p-4">
+      <div className="mb-10 animate-fade-in-up">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <h2 className="text-3xl font-bold md:text-left text-center drop-shadow-sm text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-400">Choose a Company</h2>
+          
+          {/* Stylish Search Input */}
+          <div className="bg-gray-800/50 rounded-lg py-3 px-4 shadow-lg border border-emerald-500/20 md:max-w-md w-full hover:shadow-xl transition-shadow duration-300 backdrop-blur-sm shadow-emerald-500/10">
+            <div className="relative flex items-center">
+              <svg className="h-5 w-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
+              <input
+                type="text"
+                placeholder="Search companies..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="search-input block w-full pl-3 pr-3 py-2 bg-transparent border-none focus:outline-none text-emerald-100 font-medium placeholder-emerald-200/50 focus:placeholder-emerald-200/30 transition-colors duration-200"
+              />
+              {searchTerm && (
+                <button 
+                  onClick={() => setSearchTerm('')}
+                  className="text-emerald-400 hover:text-emerald-300"
+                  type="button"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
             </div>
-            <input
-              type="text"
-              placeholder="Search companies..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input block w-full pl-12 pr-4 py-4 rounded-2xl leading-5 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-700 font-medium transition-all duration-200"
-            />
+            {searchTerm && (
+              <div className="text-xs text-emerald-200/70 mt-1 text-left">
+                Showing {filteredCompanies.length} of {companies.length} companies
+              </div>
+            )}
           </div>
-          {searchTerm && (
-            <p className="mt-2 text-sm text-gray-600">
-              Showing {filteredCompanies.length} of {companies.length} companies
-            </p>
-          )}
         </div>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <div className="mt-6 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4 mb-8">
         {filteredCompanies.map((company) => (
           <button
             key={company}
             onClick={() => handleCompanyClick(company)}
-            className="card-hover glass rounded-2xl p-6 text-left border border-white/20 group animate-fade-in-up"
+            className="bg-gray-800/40 border border-emerald-500/20 rounded-lg p-3 text-center group animate-fade-in-up flex flex-col items-center justify-center hover:scale-105 transition-transform duration-300 backdrop-blur-sm shadow-md hover:shadow-lg hover:shadow-emerald-500/10"
+            style={{ height: '95px' }}
+            type="button"
           >
-            <div className="flex items-center justify-between h-full">
-              <div className="flex-1">
-                <h3 className="font-bold text-gray-800 group-hover:text-indigo-600 transition-all duration-300 text-sm leading-tight mb-2">
+            <div className="flex flex-col items-center justify-center w-full h-full">
+              <div className="text-center overflow-hidden">
+                <h3 className="font-bold text-emerald-100 group-hover:text-emerald-300 transition-all duration-300 text-sm leading-tight px-1 truncate max-w-full">
                   {company}
                 </h3>
-                <div className="w-8 h-1 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="w-6 h-0.5 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 mx-auto mt-1.5"></div>
               </div>
-              <svg 
-                className="w-5 h-5 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all duration-300" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
             </div>
           </button>
         ))}
       </div>
       
-      {filteredCompanies.length === 0 && searchTerm && (
-        <div className="text-center py-12">
-          <div className="text-gray-400 mb-4">
-            <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.44-1.01-5.879-2.62M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+      {filteredCompanies.length === 0 && !searchTerm && (
+        <div className="text-center my-12 text-emerald-100/80 max-w-md mx-auto p-6 bg-gray-800/40 rounded-lg shadow-lg border border-emerald-500/20 backdrop-blur-md shadow-emerald-500/10">
+          <div className="text-emerald-400 mb-4">
+            <svg className="mx-auto h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <p className="text-gray-500 text-lg">No companies found matching "{searchTerm}"</p>
-          <button
-            onClick={() => setSearchTerm('')}
-            className="mt-4 text-blue-600 hover:text-blue-800 font-medium"
-          >
-            Clear search
-          </button>
+          <h3 className="text-lg font-medium text-emerald-300 mb-2">No Company Selected</h3>
+          <p>Search for a company or choose one from the list below to view their problems.</p>
         </div>
       )}
       
-      <div className="mt-12 text-center">
-        <p className="text-gray-500 text-sm">
-          Click on any company to view their curated LeetCode problems
-        </p>
+      <div className="mt-12 text-center mb-4">
+        <div className="bg-gray-800/40 border border-emerald-500/20 rounded-lg py-3 px-6 inline-block shadow-md backdrop-blur-md hover:shadow-lg transition-shadow duration-300 shadow-emerald-500/10">
+          <p className="text-emerald-100/80 text-sm flex items-center">
+            <svg className="w-4 h-4 mr-2 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="font-semibold text-emerald-300">Tip:</span>
+            <span className="ml-1">Click any company to view LeetCode problems</span>
+          </p>
+        </div>
       </div>
     </div>
   );
