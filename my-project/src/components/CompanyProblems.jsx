@@ -1,11 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { db } from '../firebase';
+import { doc, setDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore';
 import Papa from 'papaparse';
 
-const CompanyProblems = () => {
+const CompanyProblems = ({ user }) => {
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [solved, setSolved] = useState([]);
+
+  // Listen to solved problems for this user in real time
+  useEffect(() => {
+    if (!user) return;
+    const ref = doc(db, 'users', user.uid);
+    const unsub = onSnapshot(ref, (snap) => {
+      setSolved(snap.exists() && snap.data().solved ? snap.data().solved : []);
+    });
+    return () => unsub();
+  }, [user]);
+
+  // Mark/unmark a problem as solved
+  const toggleSolved = async (problemId) => {
+    if (!user) return;
+    const ref = doc(db, 'users', user.uid);
+    const today = new Date().toISOString().slice(0, 10);
+    try {
+      // Optimistic local update for immediate UI feedback
+      if (solved.includes(problemId)) {
+        setSolved(prev => prev.filter(p => p !== problemId));
+        // Try to remove fields from Firestore
+        await updateDoc(ref, {
+          solved: arrayRemove(problemId),
+        });
+        console.log(`Removed solved: ${problemId}`);
+        // Verify document after write
+        try {
+          const snap = await getDoc(ref);
+          console.log('Post-remove doc data:', snap.exists() ? snap.data() : null);
+        } catch (rerr) {
+          console.error('Error reading doc after remove:', rerr);
+        }
+      } else {
+        setSolved(prev => [...prev, problemId]);
+        await setDoc(ref, {
+          solved: arrayUnion(problemId),
+          solvedDates: arrayUnion(today),
+          recent: arrayUnion({ name: problemId, date: today })
+        }, { merge: true });
+        console.log(`Added solved: ${problemId} @ ${today}`);
+        // Verify document after write
+        try {
+          const snap = await getDoc(ref);
+          console.log('Post-add doc data:', snap.exists() ? snap.data() : null);
+        } catch (rerr) {
+          console.error('Error reading doc after add:', rerr);
+        }
+      }
+    } catch (err) {
+      console.error('Error updating solved state in Firestore:', err);
+      // Revert optimistic update on error
+      if (solved.includes(problemId)) {
+        setSolved(prev => [...prev, problemId]);
+      } else {
+        setSolved(prev => prev.filter(p => p !== problemId));
+      }
+    }
+  };
 
   // List of all companies
   const companies = [
@@ -225,19 +286,25 @@ const CompanyProblems = () => {
                     });
                     
                     return (
-                      <tr key={i} className="transition-all duration-200 hover:bg-gray-700/30">
+                      <tr key={i} className={`transition-all duration-200 hover:bg-gray-700/30 ${solved.includes(problemName) ? 'bg-emerald-900/20' : ''}`}> 
                         {/* Problem Number/ID Column */}
                         <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
                           <span className="text-xs text-emerald-400 font-bold">
                             {problemId || (i+1)}
                           </span>
                         </td>
-                        
-                        {/* Problem Name Column */}
-                        <td className="px-2 sm:px-4 py-3">
-                          <span className="text-xs text-emerald-100 font-medium">
-                            {problemName || `Problem ${i+1}`}
-                          </span>
+                        {/* Problem Name Column + Solved Checkbox */}
+                        <td className="px-2 sm:px-4 py-3 flex items-center gap-2">
+                          <button
+                            onClick={() => toggleSolved(problemName)}
+                            className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 ${solved.includes(problemName) ? 'bg-gradient-to-br from-emerald-400 to-teal-400 border-emerald-400' : 'border-emerald-500/40 bg-gray-800/40'}`}
+                            aria-label={solved.includes(problemName) ? 'Mark as unsolved' : 'Mark as solved'}
+                          >
+                            {solved.includes(problemName) && (
+                              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                            )}
+                          </button>
+                          <span className={`text-xs font-medium ${solved.includes(problemName) ? 'text-emerald-300 line-through' : 'text-emerald-100'}`}>{problemName || `Problem ${i+1}`}</span>
                         </td>
                         
                         {/* Occurrences Column */}
